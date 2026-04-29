@@ -211,6 +211,72 @@
     .lb-badge { background: var(--yellow); color: #000; border-radius: 999px; padding: 4px 14px; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px; white-space: nowrap; }
 
     /* TOAST */
+    /* CONFIRM MODAL */
+    #confirm-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000000dd;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    #confirm-modal.show { display: flex; }
+    .confirm-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .confirm-box h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+      color: var(--red);
+    }
+    .confirm-box p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .confirm-box p strong { color: var(--text); }
+    .confirm-actions { display: flex; gap: 10px; margin-top: 8px; }
+    .btn-danger {
+      flex: 1;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      padding: 12px;
+      cursor: pointer;
+      transition: opacity 0.1s;
+    }
+    .btn-danger:hover { opacity: 0.85; }
+    .btn-cancel {
+      flex: 1;
+      background: var(--border);
+      color: var(--text);
+      border: none;
+      border-radius: 8px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      padding: 12px;
+      cursor: pointer;
+      transition: opacity 0.1s;
+    }
+    .btn-cancel:hover { opacity: 0.75; }
+
     #toast {
       position: fixed;
       bottom: 24px;
@@ -258,7 +324,10 @@
 <div id="app">
   <header>
     <h1>SIOP 2026 BINGO</h1>
-    <div class="user-badge" id="user-badge">—</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="user-badge" id="user-badge">—</div>
+      <button onclick="confirmStartOver()" style="background:none;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:0.75rem;padding:5px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='var(--red)';this.style.borderColor='var(--red)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border)'">Start over?</button>
+    </div>
   </header>
   <div class="tabs">
     <button class="tab active" onclick="switchTab('board',this)">My Board</button>
@@ -330,6 +399,18 @@
           </li>
         </ol>
       </div>
+    </div>
+  </div>
+</div>
+
+<div id="confirm-modal">
+  <div class="confirm-box">
+    <h3>⚠️ ARE YOU SURE?</h3>
+    <p>This will <strong>permanently delete</strong> your current username and all your progress. Your squares, your bingos — gone. You'll start completely fresh with a new name.</p>
+    <p style="color:var(--red);font-size:0.8rem;font-weight:600;">This cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" onclick="closeConfirm()">CANCEL</button>
+      <button class="btn-danger" onclick="doStartOver()">START OVER</button>
     </div>
   </div>
 </div>
@@ -577,6 +658,26 @@
   }
 
   function closeBanner() { document.getElementById('bingo-banner').classList.remove('show'); }
+
+  function confirmStartOver() { document.getElementById('confirm-modal').classList.add('show'); }
+  function closeConfirm() { document.getElementById('confirm-modal').classList.remove('show'); }
+
+  async function doStartOver() {
+    // Clear device lock
+    localStorage.removeItem('siop_bingo_name');
+    // Clear their stored board data
+    try { await window.storage.delete('user:' + currentUser); } catch(e) {}
+    // Remove from shared players list
+    const players = await sGet('players', true) || [];
+    const updated = players.filter(p => p.name !== currentUser);
+    await sSet('players', updated, true);
+    // Remove from leaderboard
+    const lb = await sGet('leaderboard', true) || [];
+    const updatedLb = lb.filter(e => e.name !== currentUser);
+    await sSet('leaderboard', updatedLb, true);
+    // Reload page fresh
+    window.location.reload();
+  }
 
   function switchTab(name, btn) {
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
