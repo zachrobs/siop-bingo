@@ -124,19 +124,20 @@
       background: var(--card);
       border: 2px solid var(--border);
       border-radius: 8px;
-      aspect-ratio: 1;
+      min-height: 90px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 5px;
+      padding: 8px 6px;
       text-align: center;
-      font-size: clamp(0.42rem, 1.2vw, 0.62rem);
-      font-weight: 600;
-      line-height: 1.2;
+      font-size: clamp(0.6rem, 1.5vw, 0.78rem);
+      font-weight: 500;
+      line-height: 1.35;
       transition: background 0.15s, border-color 0.15s, transform 0.1s;
       position: relative;
       overflow: hidden;
+      letter-spacing: 0.01em;
     }
     .bingo-cell:hover:not(.free):not(.marked) { border-color: var(--yellow); transform: scale(1.04); }
     .bingo-cell.marked { background: var(--green); border-color: var(--green); color: #000; }
@@ -229,7 +230,7 @@
     #toast.show { transform: translateX(-50%) translateY(0); }
 
     @media (max-width: 480px) {
-      .bingo-cell { font-size: 0.4rem; padding: 3px; }
+      .bingo-cell { font-size: 0.6rem; padding: 6px; min-height: 70px; }
       .col-header { font-size: 1.2rem; }
       .tab-content { padding: 14px 10px; }
       .tab { padding: 8px 10px 10px; font-size: 0.82rem; }
@@ -241,7 +242,7 @@
 <div id="login-screen">
   <div>
     <h1>INAUGURAL<br/>SIOP 2026<br/>BINGO</h1>
-    <p style="margin-top:8px;font-style:italic;color:#888;max-width:320px;text-align:center;">Only SIOPers with a penchant for judgment. Fellows not welcome.</p>
+    <p style="margin-top:8px;font-style:italic;color:#888;max-width:320px;text-align:center;width:100%;display:block;">Only SIOPers with a penchant for judgment. Fellows not welcome.</p>
   </div>
   <div class="login-form">
     <input type="text"     id="name-input" placeholder="Your name / nickname" autocomplete="off"/>
