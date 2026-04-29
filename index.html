@@ -316,7 +316,7 @@
 <div id="login-screen">
   <div>
     <h1>INAUGURAL<br/>SIOP 2026<br/>BINGO</h1>
-    <p style="margin-top:8px;font-style:italic;color:#a8bcd8;max-width:320px;text-align:center;width:100%;display:block;align-self:center;">Only SIOPers with a penchant for judgment. Fellows not welcome.</p>
+    <p style="margin-top:8px;font-style:italic;color:#a8bcd8;text-align:center;width:100%;display:block;">Only SIOPers with a penchant for judgment. Fellows not welcome.</p>
   </div>
   <div class="login-form">
     <input type="text"     id="name-input" placeholder="Your name / nickname" autocomplete="off"/>
@@ -501,12 +501,18 @@
     document.getElementById('app').style.display = 'block';
     document.getElementById('user-badge').textContent = name;
     await loadState();
-    // Register in shared player list on login
+    // Always upsert into shared player list so they appear immediately
     const players = await sGet('players', true) || [];
-    if (!players.find(p => p.name === currentUser)) {
-      players.push({ name: currentUser, marked: [...markedCells].filter(i=>i!==12).length, bingo: false });
-      await sSet('players', players, true);
+    const existing = players.find(p => p.name === currentUser);
+    const markedCount = [...markedCells].filter(i => i !== 12).length;
+    const hasBingo = getWins().length > 0;
+    if (existing) {
+      existing.marked = markedCount;
+      existing.bingo = hasBingo;
+    } else {
+      players.push({ name: currentUser, marked: markedCount, bingo: hasBingo });
     }
+    await sSet('players', players, true);
     renderBoard();
     renderLeaderboard();
     renderPlayers();
