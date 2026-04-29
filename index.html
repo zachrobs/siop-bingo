@@ -4,23 +4,26 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Inaugural SIOP 2026 Bingo</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --bg: #0f0f0f;
-      --card: #1a1a1a;
-      --border: #2e2e2e;
-      --yellow: #f5e642;
-      --green: #39ff14;
-      --red: #ff3b3b;
-      --text: #f0f0f0;
-      --muted: #666;
+      --bg: #f4f6fa;
+      --card: #ffffff;
+      --border: #d0d8e8;
+      --navy: #1b3a6b;
+      --navy-dark: #112850;
+      --gold: #c8982a;
+      --green: #1a7a3c;
+      --red: #c0392b;
+      --text: #1a1a2e;
+      --muted: #6b7a99;
+      --yellow: #c8982a;
     }
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
     }
@@ -34,38 +37,41 @@
       min-height: 100vh;
       padding: 24px;
       gap: 32px;
+      background: var(--navy);
     }
     #login-screen h1 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(3.5rem, 14vw, 8rem);
-      letter-spacing: 4px;
-      color: var(--yellow);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 8vw, 5rem);
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #ffffff;
       text-align: center;
-      line-height: 1;
+      line-height: 1.1;
     }
-    #login-screen p { color: var(--muted); font-size: 1rem; text-align: center; }
+    #login-screen p { color: #a8bcd8; font-size: 1rem; text-align: center; }
     .login-form { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 340px; }
     .login-form input {
-      background: var(--card);
-      border: 2px solid var(--border);
+      background: #ffffff1a;
+      border: 2px solid #ffffff33;
       border-radius: 8px;
-      color: var(--text);
-      font-family: 'DM Mono', monospace;
+      color: #ffffff;
+      font-family: 'Source Sans 3', sans-serif;
       font-size: 1rem;
       padding: 14px 16px;
       outline: none;
       transition: border-color 0.2s;
     }
-    .login-form input:focus { border-color: var(--yellow); }
-    .login-form input::placeholder { color: var(--muted); }
+    .login-form input:focus { border-color: var(--gold); }
+    .login-form input::placeholder { color: #a8bcd8; }
     .btn {
-      background: var(--yellow);
-      color: #000;
+      background: var(--gold);
+      color: #fff;
       border: none;
       border-radius: 8px;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.4rem;
-      letter-spacing: 2px;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
       padding: 14px;
       cursor: pointer;
       transition: transform 0.1s, opacity 0.1s;
@@ -81,34 +87,35 @@
       align-items: center;
       justify-content: space-between;
       padding: 16px 24px;
-      border-bottom: 1px solid var(--border);
+      background: var(--navy);
+      border-bottom: 4px solid var(--gold);
       flex-wrap: wrap;
       gap: 12px;
     }
-    header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--yellow); letter-spacing: 3px; line-height: 1.1; }
+    header h1 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: #ffffff; letter-spacing: 1px; line-height: 1.2; font-weight: 900; }
     .user-badge {
-      background: var(--card);
-      border: 1px solid var(--border);
+      background: #ffffff22;
+      border: 1px solid #ffffff44;
       border-radius: 999px;
       padding: 6px 16px;
       font-family: 'DM Mono', monospace;
       font-size: 0.85rem;
-      color: var(--yellow);
+      color: #ffffff;
     }
-    .tabs { display: flex; gap: 4px; padding: 16px 24px 0; border-bottom: 1px solid var(--border); }
+    .tabs { display: flex; gap: 4px; padding: 0 24px; background: #fff; border-bottom: 2px solid var(--border); }
     .tab {
       background: none;
       border: none;
       border-bottom: 3px solid transparent;
       color: var(--muted);
       cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
       font-size: 0.95rem;
       font-weight: 600;
-      padding: 8px 20px 12px;
+      padding: 14px 20px;
       transition: color 0.2s, border-color 0.2s;
     }
-    .tab.active { color: var(--yellow); border-bottom-color: var(--yellow); }
+    .tab.active { color: var(--navy); border-bottom-color: var(--navy); }
     .tab-content { display: none; padding: 24px; }
     .tab-content.active { display: block; }
 
@@ -116,9 +123,9 @@
     .board-wrap { max-width: 640px; margin: 0 auto; }
     .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
     .progress-label { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--muted); }
-    .progress-label span { color: var(--yellow); font-weight: 600; }
+    .progress-label span { color: var(--navy); font-weight: 700; }
     .col-headers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 6px; }
-    .col-header { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 2px; color: var(--yellow); text-align: center; }
+    .col-header { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: var(--navy); text-align: center; }
     .bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
     .bingo-cell {
       background: var(--card);
@@ -139,8 +146,8 @@
       overflow: hidden;
       letter-spacing: 0.01em;
     }
-    .bingo-cell:hover:not(.free):not(.marked) { border-color: var(--yellow); transform: scale(1.04); }
-    .bingo-cell.marked { background: var(--green); border-color: var(--green); color: #000; }
+    .bingo-cell:hover:not(.free):not(.marked) { border-color: var(--navy); transform: scale(1.04); }
+    .bingo-cell.marked { background: var(--navy); border-color: var(--navy); color: #fff; }
     .bingo-cell.marked::after {
       content: '✓';
       position: absolute;
@@ -150,12 +157,13 @@
       opacity: 0.5;
     }
     .bingo-cell.free {
-      background: var(--yellow);
-      border-color: var(--yellow);
-      color: #000;
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #fff;
       cursor: default;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 0.9rem;
+      font-weight: 700;
       letter-spacing: 1px;
     }
     .bingo-cell.bingo-line { border-color: var(--red); }
@@ -177,7 +185,7 @@
     #bingo-banner h2 {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(5rem, 20vw, 12rem);
-      color: var(--yellow);
+      color: var(--gold);
       letter-spacing: 8px;
       animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       text-shadow: 0 0 80px #f5e64288;
@@ -201,14 +209,14 @@
       padding: 16px 20px;
       margin-bottom: 10px;
     }
-    .lb-rank { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--muted); width: 32px; text-align: center; }
+    .lb-rank { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 2rem; color: var(--muted); width: 32px; text-align: center; }
     .lb-rank.gold   { color: #ffd700; }
     .lb-rank.silver { color: #c0c0c0; }
     .lb-rank.bronze { color: #cd7f32; }
     .lb-info { flex: 1; }
     .lb-name { font-weight: 800; font-size: 1.05rem; }
     .lb-time { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
-    .lb-badge { background: var(--yellow); color: #000; border-radius: 999px; padding: 4px 14px; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px; white-space: nowrap; }
+    .lb-badge { background: var(--navy); color: #fff; border-radius: 999px; padding: 4px 14px; font-family: 'Source Sans 3', sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.5px; white-space: nowrap; }
 
     /* TOAST */
     /* CONFIRM MODAL */
@@ -239,7 +247,7 @@
       font-family: 'Bebas Neue', sans-serif;
       font-size: 1.8rem;
       letter-spacing: 2px;
-      color: var(--red);
+      color: var(--red); font-family: 'Playfair Display', serif;
     }
     .confirm-box p {
       font-size: 0.9rem;
@@ -264,8 +272,8 @@
     .btn-danger:hover { opacity: 0.85; }
     .btn-cancel {
       flex: 1;
-      background: var(--border);
-      color: var(--text);
+      background: #e8ecf4;
+      color: var(--navy);
       border: none;
       border-radius: 8px;
       font-family: 'Bebas Neue', sans-serif;
@@ -282,7 +290,7 @@
       bottom: 24px;
       left: 50%;
       transform: translateX(-50%) translateY(120px);
-      background: var(--green);
+      background: var(--navy);
       color: #000;
       border-radius: 999px;
       padding: 12px 28px;
@@ -308,7 +316,7 @@
 <div id="login-screen">
   <div>
     <h1>INAUGURAL<br/>SIOP 2026<br/>BINGO</h1>
-    <p style="margin-top:8px;font-style:italic;color:#888;max-width:320px;text-align:center;width:100%;display:block;">Only SIOPers with a penchant for judgment. Fellows not welcome.</p>
+    <p style="margin-top:8px;font-style:italic;color:#a8bcd8;max-width:320px;text-align:center;width:100%;display:block;align-self:center;">Only SIOPers with a penchant for judgment. Fellows not welcome.</p>
   </div>
   <div class="login-form">
     <input type="text"     id="name-input" placeholder="Your name / nickname" autocomplete="off"/>
@@ -340,7 +348,7 @@
     <div class="board-wrap">
       <div class="board-header">
         <div class="progress-label">Marked: <span id="marked-count">0</span> / 24</div>
-        <div class="progress-label" id="bingo-count-label" style="display:none;color:var(--green);">🎉 <span id="bingo-count">0</span> BINGO(S)!</div>
+        <div class="progress-label" id="bingo-count-label" style="display:none;color:var(--green);font-weight:700;">🎉 <span id="bingo-count">0</span> BINGO(S)!</div>
       </div>
       <div class="col-headers">
         <div class="col-header">B</div><div class="col-header">I</div>
@@ -362,39 +370,39 @@
   <div class="tab-content" id="tab-howto">
     <div style="max-width:600px;margin:0 auto;">
       <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px 28px 24px;">
-        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;color:var(--yellow);margin-bottom:20px;">HOW TO PLAY</h2>
+        <h2 style="font-family:'Playfair Display',serif;font-weight:900;font-size:2rem;letter-spacing:1px;color:var(--navy);margin-bottom:20px;">How to Play</h2>
         <p style="color:#aaa;font-style:italic;margin-bottom:24px;">Welcome to Inaugural SIOP 2026 Bingo.</p>
         <ol style="list-style:none;display:flex;flex-direction:column;gap:16px;">
           <li style="display:flex;gap:14px;align-items:flex-start;">
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">1</span>
+            <span style="font-family:'Playfair Display',serif;font-weight:900;font-size:1.3rem;color:var(--navy);line-height:1;min-width:24px;">1</span>
             <span><strong>Choose a name for yourself and enter the password</strong> you received from the admin to access your personal board.</span>
           </li>
           <li style="display:flex;gap:14px;align-items:flex-start;">
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">2</span>
+            <span style="font-family:'Playfair Display',serif;font-weight:900;font-size:1.3rem;color:var(--navy);line-height:1;min-width:24px;">2</span>
             <span><strong>Your board has 25 squares</strong> — 24 pre-set prompts and a FREE center space, each describing something you might witness or experience at SIOP.</span>
           </li>
           <li style="display:flex;gap:14px;align-items:flex-start;">
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">3</span>
+            <span style="font-family:'Playfair Display',serif;font-weight:900;font-size:1.3rem;color:var(--navy);line-height:1;min-width:24px;">3</span>
             <span><strong>Tap a square to mark it</strong> when you witness or experience what it describes. Tap again to unmark.</span>
           </li>
           <li style="display:flex;gap:14px;align-items:flex-start;">
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">4</span>
+            <span style="font-family:'Playfair Display',serif;font-weight:900;font-size:1.3rem;color:var(--navy);line-height:1;min-width:24px;">4</span>
             <span><strong>Get BINGO</strong> by completing a full row, column, or diagonal — 5 marked squares in a line.</span>
           </li>
           <li style="display:flex;gap:14px;align-items:flex-start;">
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">5</span>
+            <span style="font-family:'Playfair Display',serif;font-weight:900;font-size:1.3rem;color:var(--navy);line-height:1;min-width:24px;">5</span>
             <span><strong>Your progress saves automatically</strong> — close the browser and come back anytime, your board will be right where you left it.</span>
           </li>
           <li style="display:flex;gap:14px;align-items:flex-start;">
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">6</span>
+            <span style="font-family:'Playfair Display',serif;font-weight:900;font-size:1.3rem;color:var(--navy);line-height:1;min-width:24px;">6</span>
             <span><strong>When you get BINGO</strong>, you'll see a notification and your name and timestamp will appear on the leaderboard for all players to see.</span>
           </li>
           <li style="display:flex;gap:14px;align-items:flex-start;">
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">7</span>
+            <span style="font-family:'Playfair Display',serif;font-weight:900;font-size:1.3rem;color:var(--navy);line-height:1;min-width:24px;">7</span>
             <span><strong>Honor system</strong> — only mark squares you've actually witnessed. We're judgy people. Act accordingly.</span>
           </li>
           <li style="display:flex;gap:14px;align-items:flex-start;">
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">8</span>
+            <span style="font-family:'Playfair Display',serif;font-weight:900;font-size:1.3rem;color:var(--navy);line-height:1;min-width:24px;">8</span>
             <span><strong>This is not for general consumption</strong> — please use your best discretion about who you share this with. When in doubt, don't.</span>
           </li>
         </ol>
@@ -418,7 +426,7 @@
 <div id="bingo-banner">
   <h2>BINGO!</h2>
   <p id="bingo-banner-msg"></p>
-  <button class="btn" onclick="closeBanner()">KEEP PLAYING</button>
+  <button class="btn" onclick="closeBanner()" style="background:var(--gold);">Keep Playing</button>
 </div>
 
 <div id="toast"></div>
