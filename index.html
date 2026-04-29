@@ -264,6 +264,7 @@
     <button class="tab active" onclick="switchTab('board',this)">My Board</button>
     <button class="tab"        onclick="switchTab('leaders',this)">Leaderboard</button>
     <button class="tab"        onclick="switchTab('howto',this)">How to Play</button>
+    <button class="tab"        onclick="switchTab('players',this)">Players</button>
   </div>
 
   <div class="tab-content active" id="tab-board">
@@ -283,6 +284,10 @@
 
   <div class="tab-content" id="tab-leaders">
     <div id="leaderboard-list"><div class="leaderboard-empty">No bingos yet — be the first! 🎯</div></div>
+  </div>
+
+  <div class="tab-content" id="tab-players">
+    <div id="players-list"><div class="leaderboard-empty">No players yet.</div></div>
   </div>
 
   <div class="tab-content" id="tab-howto">
@@ -396,15 +401,38 @@
     const err  = document.getElementById('error-msg');
     if (!name) { err.textContent = 'Please enter a name.'; return; }
     if (pass !== PASSWORD) { err.textContent = 'Wrong password.'; return; }
+    // Lock name to this device
+    localStorage.setItem('siop_bingo_name', name);
+    await startSession(name);
+  }
+
+  async function startSession(name) {
     currentUser = name;
-    err.textContent = '';
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     document.getElementById('user-badge').textContent = name;
     await loadState();
+    // Register in shared player list on login
+    const players = await sGet('players', true) || [];
+    if (!players.find(p => p.name === currentUser)) {
+      players.push({ name: currentUser, marked: [...markedCells].filter(i=>i!==12).length, bingo: false });
+      await sSet('players', players, true);
+    }
     renderBoard();
     renderLeaderboard();
   }
+
+  // Auto-login if name already locked to this device
+  window.addEventListener('load', async () => {
+    const saved = localStorage.getItem('siop_bingo_name');
+    if (saved) {
+      document.getElementById('name-input').value = saved;
+      // Show a returning user message
+      document.getElementById('error-msg').style.color = 'var(--green)';
+      document.getElementById('error-msg').textContent = 'Welcome back, ' + saved + '!';
+      await startSession(saved);
+    }
+  });
 
   document.getElementById('pass-input').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
   document.getElementById('name-input').addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('pass-input').focus(); });
@@ -423,6 +451,33 @@
 
   async function saveState() {
     await sSet('user:' + currentUser, { marked: [...markedCells], announcedBingos: [...announcedBingos] });
+    // Also update shared player registry
+    const players = await sGet('players', true) || [];
+    const hasBingo = getWins().length > 0;
+    const ex = players.find(p => p.name === currentUser);
+    if (ex) {
+      ex.marked = [...markedCells].filter(i => i !== 12).length;
+      ex.bingo = hasBingo;
+    } else {
+      players.push({ name: currentUser, marked: [...markedCells].filter(i => i !== 12).length, bingo: hasBingo });
+    }
+    await sSet('players', players, true);
+  }
+
+  async function renderPlayers() {
+    const players = await sGet('players', true) || [];
+    const list = document.getElementById('players-list');
+    if (!players.length) { list.innerHTML = '<div class="leaderboard-empty">No players yet.</div>'; return; }
+    players.sort((a, b) => b.marked - a.marked);
+    list.innerHTML = players.map((p, i) => `
+      <div class="lb-item">
+        <div class="lb-rank">${i+1}</div>
+        <div class="lb-info">
+          <div class="lb-name">${p.name}</div>
+          <div class="lb-time">${p.marked} / 24 squares marked</div>
+        </div>
+        ${p.bingo ? '<div class="lb-badge" style="background:var(--green);">BINGO ✓</div>' : '<div style="width:72px;"></div>'}
+      </div>`).join('');
   }
 
   function renderBoard() {
@@ -528,10 +583,16 @@
     btn.classList.add('active');
     document.getElementById('tab-'+name).classList.add('active');
     if (name==='leaders') renderLeaderboard();
+    if (name==='players') renderPlayers();
   }
 
   // Poll leaderboard every 20s for live updates from other players
-  setInterval(() => { if (currentUser) renderLeaderboard(); }, 20000);
+  setInterval(() => {
+    if (currentUser) {
+      renderLeaderboard();
+      renderPlayers();
+    }
+  }, 20000);
 </script>
 </body>
 </html>
