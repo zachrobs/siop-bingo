@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inaugural SIOP 2026 Bingo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --card: #1a1a1a;
+      --border: #2e2e2e;
+      --yellow: #f5e642;
+      --green: #39ff14;
+      --red: #ff3b3b;
+      --text: #f0f0f0;
+      --muted: #666;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* LOGIN */
+    #login-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+      gap: 32px;
+    }
+    #login-screen h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.5rem, 14vw, 8rem);
+      letter-spacing: 4px;
+      color: var(--yellow);
+      text-align: center;
+      line-height: 1;
+    }
+    #login-screen p { color: var(--muted); font-size: 1rem; text-align: center; }
+    .login-form { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 340px; }
+    .login-form input {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 1rem;
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .login-form input:focus { border-color: var(--yellow); }
+    .login-form input::placeholder { color: var(--muted); }
+    .btn {
+      background: var(--yellow);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      padding: 14px;
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.1s;
+    }
+    .btn:hover { opacity: 0.88; }
+    .btn:active { transform: scale(0.97); }
+    .error-msg { color: var(--red); font-size: 0.85rem; text-align: center; font-family: 'DM Mono', monospace; min-height: 20px; }
+
+    /* APP */
+    #app { display: none; }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--yellow); letter-spacing: 3px; line-height: 1.1; }
+    .user-badge {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--yellow);
+    }
+    .tabs { display: flex; gap: 4px; padding: 16px 24px 0; border-bottom: 1px solid var(--border); }
+    .tab {
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 8px 20px 12px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tab.active { color: var(--yellow); border-bottom-color: var(--yellow); }
+    .tab-content { display: none; padding: 24px; }
+    .tab-content.active { display: block; }
+
+    /* BOARD */
+    .board-wrap { max-width: 640px; margin: 0 auto; }
+    .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+    .progress-label { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--muted); }
+    .progress-label span { color: var(--yellow); font-weight: 600; }
+    .col-headers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 6px; }
+    .col-header { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 2px; color: var(--yellow); text-align: center; }
+    .bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .bingo-cell {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      aspect-ratio: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+      text-align: center;
+      font-size: clamp(0.42rem, 1.2vw, 0.62rem);
+      font-weight: 600;
+      line-height: 1.2;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      position: relative;
+      overflow: hidden;
+    }
+    .bingo-cell:hover:not(.free):not(.marked) { border-color: var(--yellow); transform: scale(1.04); }
+    .bingo-cell.marked { background: var(--green); border-color: var(--green); color: #000; }
+    .bingo-cell.marked::after {
+      content: '✓';
+      position: absolute;
+      top: 3px; right: 5px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      opacity: 0.5;
+    }
+    .bingo-cell.free {
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: #000;
+      cursor: default;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 1px;
+    }
+    .bingo-cell.bingo-line { border-color: var(--red); }
+    .bingo-cell.marked.bingo-line { background: var(--red); border-color: var(--red); color: #fff; }
+
+    /* BINGO BANNER */
+    #bingo-banner {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000000dd;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 20px;
+    }
+    #bingo-banner.show { display: flex; }
+    #bingo-banner h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(5rem, 20vw, 12rem);
+      color: var(--yellow);
+      letter-spacing: 8px;
+      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-shadow: 0 0 80px #f5e64288;
+    }
+    #bingo-banner p { font-size: 1.2rem; color: var(--text); text-align: center; padding: 0 20px; }
+    #bingo-banner .btn { margin-top: 8px; padding: 12px 40px; font-size: 1.2rem; }
+    @keyframes popIn {
+      from { transform: scale(0.3) rotate(-8deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0); opacity: 1; }
+    }
+
+    /* LEADERBOARD */
+    .leaderboard-empty { text-align: center; color: var(--muted); font-family: 'DM Mono', monospace; padding: 60px 0; font-size: 0.9rem; }
+    .lb-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 10px;
+    }
+    .lb-rank { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--muted); width: 32px; text-align: center; }
+    .lb-rank.gold   { color: #ffd700; }
+    .lb-rank.silver { color: #c0c0c0; }
+    .lb-rank.bronze { color: #cd7f32; }
+    .lb-info { flex: 1; }
+    .lb-name { font-weight: 800; font-size: 1.05rem; }
+    .lb-time { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+    .lb-badge { background: var(--yellow); color: #000; border-radius: 999px; padding: 4px 14px; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px; white-space: nowrap; }
+
+    /* TOAST */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120px);
+      background: var(--green);
+      color: #000;
+      border-radius: 999px;
+      padding: 12px 28px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      z-index: 2000;
+      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 480px) {
+      .bingo-cell { font-size: 0.4rem; padding: 3px; }
+      .col-header { font-size: 1.2rem; }
+      .tab-content { padding: 14px 10px; }
+      .tab { padding: 8px 10px 10px; font-size: 0.82rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div>
+    <h1>INAUGURAL<br/>SIOP 2026<br/>BINGO</h1>
+    <p style="margin-top:8px;font-style:italic;color:#888;max-width:320px;text-align:center;">Only SIOPers with a penchant for judgment. Fellows not welcome.</p>
+  </div>
+  <div class="login-form">
+    <input type="text"     id="name-input" placeholder="Your name / nickname" autocomplete="off"/>
+    <input type="password" id="pass-input" placeholder="Password" autocomplete="off"/>
+    <div class="error-msg" id="error-msg"></div>
+    <button class="btn" onclick="doLogin()">LET'S PLAY</button>
+    <p style="font-size:0.75rem;color:var(--muted);text-align:center;line-height:1.5;margin-top:4px;">
+      If issues or interest in participating, text <strong style="color:var(--text);">520-222-8012</strong> with your name (and who referred you if applicable).
+    </p>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <h1>SIOP 2026 BINGO</h1>
+    <div class="user-badge" id="user-badge">—</div>
+  </header>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('board',this)">My Board</button>
+    <button class="tab"        onclick="switchTab('leaders',this)">Leaderboard</button>
+    <button class="tab"        onclick="switchTab('howto',this)">How to Play</button>
+  </div>
+
+  <div class="tab-content active" id="tab-board">
+    <div class="board-wrap">
+      <div class="board-header">
+        <div class="progress-label">Marked: <span id="marked-count">0</span> / 24</div>
+        <div class="progress-label" id="bingo-count-label" style="display:none;color:var(--green);">🎉 <span id="bingo-count">0</span> BINGO(S)!</div>
+      </div>
+      <div class="col-headers">
+        <div class="col-header">B</div><div class="col-header">I</div>
+        <div class="col-header">N</div><div class="col-header">G</div>
+        <div class="col-header">O</div>
+      </div>
+      <div class="bingo-grid" id="bingo-grid"></div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-leaders">
+    <div id="leaderboard-list"><div class="leaderboard-empty">No bingos yet — be the first! 🎯</div></div>
+  </div>
+
+  <div class="tab-content" id="tab-howto">
+    <div style="max-width:600px;margin:0 auto;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px 28px 24px;">
+        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;color:var(--yellow);margin-bottom:20px;">HOW TO PLAY</h2>
+        <p style="color:#aaa;font-style:italic;margin-bottom:24px;">Welcome to Inaugural SIOP 2026 Bingo.</p>
+        <ol style="list-style:none;display:flex;flex-direction:column;gap:16px;">
+          <li style="display:flex;gap:14px;align-items:flex-start;">
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">1</span>
+            <span><strong>Choose a name for yourself and enter the password</strong> you received from the admin to access your personal board.</span>
+          </li>
+          <li style="display:flex;gap:14px;align-items:flex-start;">
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">2</span>
+            <span><strong>Your board has 25 squares</strong> — 24 pre-set prompts and a FREE center space, each describing something you might witness or experience at SIOP.</span>
+          </li>
+          <li style="display:flex;gap:14px;align-items:flex-start;">
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">3</span>
+            <span><strong>Tap a square to mark it</strong> when you witness or experience what it describes. Tap again to unmark.</span>
+          </li>
+          <li style="display:flex;gap:14px;align-items:flex-start;">
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">4</span>
+            <span><strong>Get BINGO</strong> by completing a full row, column, or diagonal — 5 marked squares in a line.</span>
+          </li>
+          <li style="display:flex;gap:14px;align-items:flex-start;">
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">5</span>
+            <span><strong>Your progress saves automatically</strong> — close the browser and come back anytime, your board will be right where you left it.</span>
+          </li>
+          <li style="display:flex;gap:14px;align-items:flex-start;">
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">6</span>
+            <span><strong>When you get BINGO</strong>, you'll see a notification and your name and timestamp will appear on the leaderboard for all players to see.</span>
+          </li>
+          <li style="display:flex;gap:14px;align-items:flex-start;">
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">7</span>
+            <span><strong>Honor system</strong> — only mark squares you've actually witnessed. We're judgy people. Act accordingly.</span>
+          </li>
+          <li style="display:flex;gap:14px;align-items:flex-start;">
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--yellow);line-height:1;min-width:24px;">8</span>
+            <span><strong>This is not for general consumption</strong> — please use your best discretion about who you share this with. When in doubt, don't.</span>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="bingo-banner">
+  <h2>BINGO!</h2>
+  <p id="bingo-banner-msg"></p>
+  <button class="btn" onclick="closeBanner()">KEEP PLAYING</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  const PASSWORD = '>fellows';
+
+  const SQUARES = [
+    "Hearing rumors of free drinks at some reception you're (at best) tangentially related to",
+    "Hearing old white man use sports metaphor",
+    "Seeing loose bandaid hanging from a heel",
+    "Seeing 10+ pieces of flare on a person's name tag",
+    "Witnessing hungover presenter",
+    "Seeing 5+ girls hover/follow potentially predatory professor",
+    "Seeing blue hair",
+    "Witnessing presenter reply with \"it depends\"",
+    "Engaging in 1 min+ convo with prominent UH weirdo (you know who)",
+    "Witnessing self promotion packaged as question",
+    "Avoiding your advisor",
+    "Witnessing hostile back and forth during Q&A",
+    "Seeing green hair",
+    "Making it rain at a session",
+    "Seeing person wear clothes with tags still on or similar",
+    "Seeing person wear nsfw outfit at conference",
+    "Hearing person discuss strip clubs",
+    "Dancing with a prop",
+    "Getting a local's phone number or LinkedIn",
+    "Avoiding Alan Witt",
+    "Hearing someone use MBTI in an example",
+    "Asking question during a Q&A",
+    "Taking merch without exchanging 1 word",
+    "Getting questioned by the authorities"
+  ];
+
+  // 5x5 grid: indices 0-11 = squares 0-11, index 12 = FREE, indices 13-24 = squares 12-23
+  const BOARD = [0,1,2,3,4,5,6,7,8,9,10,11,'FREE',12,13,14,15,16,17,18,19,20,21,22,23];
+
+  const WIN_LINES = [
+    [0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24],
+    [0,5,10,15,20],[1,6,11,16,21],[2,7,12,17,22],[3,8,13,18,23],[4,9,14,19,24],
+    [0,6,12,18,24],[4,8,12,16,20]
+  ];
+
+  let currentUser = null;
+  let markedCells = new Set([12]);
+  let announcedBingos = new Set();
+
+  // Storage helpers
+  async function sGet(key, shared=false) {
+    try { const r = await window.storage.get(key, shared); return r ? JSON.parse(r.value) : null; }
+    catch(e) { return null; }
+  }
+  async function sSet(key, val, shared=false) {
+    try { await window.storage.set(key, JSON.stringify(val), shared); } catch(e) {}
+  }
+
+  // Login
+  async function doLogin() {
+    const name = document.getElementById('name-input').value.trim();
+    const pass = document.getElementById('pass-input').value;
+    const err  = document.getElementById('error-msg');
+    if (!name) { err.textContent = 'Please enter a name.'; return; }
+    if (pass !== PASSWORD) { err.textContent = 'Wrong password.'; return; }
+    currentUser = name;
+    err.textContent = '';
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('user-badge').textContent = name;
+    await loadState();
+    renderBoard();
+    renderLeaderboard();
+  }
+
+  document.getElementById('pass-input').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+  document.getElementById('name-input').addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('pass-input').focus(); });
+
+  async function loadState() {
+    const d = await sGet('user:' + currentUser);
+    if (d) {
+      markedCells = new Set(d.marked || [12]);
+      announcedBingos = new Set(d.announcedBingos || []);
+    } else {
+      markedCells = new Set([12]);
+      announcedBingos = new Set();
+    }
+    markedCells.add(12);
+  }
+
+  async function saveState() {
+    await sSet('user:' + currentUser, { marked: [...markedCells], announcedBingos: [...announcedBingos] });
+  }
+
+  function renderBoard() {
+    const grid = document.getElementById('bingo-grid');
+    grid.innerHTML = '';
+    BOARD.forEach((sq, i) => {
+      const cell = document.createElement('div');
+      cell.className = 'bingo-cell';
+      cell.dataset.idx = i;
+      if (sq === 'FREE') {
+        cell.classList.add('free','marked');
+        cell.textContent = 'FREE';
+      } else {
+        cell.textContent = SQUARES[sq];
+        if (markedCells.has(i)) cell.classList.add('marked');
+        cell.addEventListener('click', () => toggleCell(i));
+      }
+      grid.appendChild(cell);
+    });
+    highlightWins();
+    updateCounts();
+  }
+
+  function toggleCell(i) {
+    if (i === 12) return;
+    markedCells.has(i) ? markedCells.delete(i) : markedCells.add(i);
+    document.querySelector(`.bingo-cell[data-idx="${i}"]`).classList.toggle('marked');
+    highlightWins();
+    updateCounts();
+    saveState();
+    checkBingos();
+  }
+
+  function getWins() {
+    return WIN_LINES.filter(line => line.every(i => markedCells.has(i)));
+  }
+
+  function highlightWins() {
+    document.querySelectorAll('.bingo-cell').forEach(c => c.classList.remove('bingo-line'));
+    getWins().forEach(line => line.forEach(i => {
+      document.querySelector(`.bingo-cell[data-idx="${i}"]`)?.classList.add('bingo-line');
+    }));
+  }
+
+  function updateCounts() {
+    document.getElementById('marked-count').textContent = [...markedCells].filter(i=>i!==12).length;
+    const n = getWins().length;
+    const lbl = document.getElementById('bingo-count-label');
+    lbl.style.display = n > 0 ? '' : 'none';
+    document.getElementById('bingo-count').textContent = n;
+  }
+
+  async function checkBingos() {
+    const wins = getWins();
+    const lineKeys = wins.map((_,i) => i);
+    const newWins = lineKeys.filter(k => !announcedBingos.has(k));
+    if (newWins.length === 0) return;
+    newWins.forEach(k => announcedBingos.add(k));
+    await saveState();
+    await recordBingo(wins.length);
+    showBanner(wins.length);
+    renderLeaderboard();
+  }
+
+  async function recordBingo(count) {
+    const lb = await sGet('leaderboard', true) || [];
+    const ex = lb.find(e => e.name === currentUser);
+    const now = new Date().toISOString();
+    if (ex) { ex.bingos = count; ex.latest = now; }
+    else { lb.push({ name: currentUser, bingos: count, first: now, latest: now }); }
+    await sSet('leaderboard', lb, true);
+  }
+
+  async function renderLeaderboard() {
+    const lb = await sGet('leaderboard', true) || [];
+    const list = document.getElementById('leaderboard-list');
+    if (!lb.length) { list.innerHTML = '<div class="leaderboard-empty">No bingos yet — be the first! 🎯</div>'; return; }
+    lb.sort((a,b) => b.bingos - a.bingos || new Date(a.first) - new Date(b.first));
+    list.innerHTML = lb.map((e,i) => {
+      const rc = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+      const t = new Date(e.first).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
+      return `<div class="lb-item">
+        <div class="lb-rank ${rc}">${i+1}</div>
+        <div class="lb-info">
+          <div class="lb-name">${e.name}</div>
+          <div class="lb-time">First BINGO: ${t}</div>
+        </div>
+        <div class="lb-badge">${e.bingos} BINGO${e.bingos>1?'S':''}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function showBanner(n) {
+    document.getElementById('bingo-banner-msg').textContent = `${currentUser} got ${n} BINGO${n>1?'S':''}! 🎉`;
+    document.getElementById('bingo-banner').classList.add('show');
+  }
+
+  function closeBanner() { document.getElementById('bingo-banner').classList.remove('show'); }
+
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+name).classList.add('active');
+    if (name==='leaders') renderLeaderboard();
+  }
+
+  // Poll leaderboard every 20s for live updates from other players
+  setInterval(() => { if (currentUser) renderLeaderboard(); }, 20000);
+</script>
+</body>
+</html>
